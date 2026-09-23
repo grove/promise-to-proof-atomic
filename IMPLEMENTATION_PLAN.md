@@ -1,4 +1,10 @@
+# P2PA-001 Implementation Runbook
+
+This is a human-operated runbook. Run each prompt in a fresh session where directed, inspect every returned artifact, replace angle-bracketed placeholders with exact saved references, and perform each approval or publication step yourself.
+
 Use Promise to Proof at **two levels**: first to turn the integration specification into a parent acceptance contract and decompose it into independently deliverable children; then run the normal `plan → implement → review + prove` cycle for every child. Because the specification requires changes in both Atomic and the integration repository, do **not** try to implement it as one giant `implement-contract` run.
+
+This decomposition organizes the project that builds version 1. It is not a feature of the delivered workflow. The implementation must still accept one unsliced work item and reject parent/child workflow inputs as required by P2PA-001 section 3.
 
 I would use the following process.
 
@@ -48,6 +54,9 @@ Requirements:
 - Record genuine unresolved outcome decisions as open questions rather than
   guessing.
 - Use stable requirement IDs and retain traceability to the specification.
+- Include a traceability appendix mapping every normative statement in the
+  specification to one or more acceptance requirement IDs. The appendix is an
+  index, not a second checklist; no normative statement may be unmapped.
 - The implementation must ultimately satisfy the complete v1 release, not only
   Gate A or the direct happy path.
 
@@ -57,7 +66,7 @@ docs/acceptance-contracts/p2pa-001.md
 Do not implement anything. Return the proposed contract and storage handoff only.
 ```
 
-Review that contract carefully. In particular, make sure it really accounts for R1–R25, the durable-only requirement, role isolation, structured phase outputs, currentness/invalidation, authorization, correction routing, and crash recovery.
+Before approving the contract, compare its traceability appendix with the specification. Confirm that R1-R25 appear exactly once in the acceptance matrix, every normative statement is mapped, no source obligation was invented, and no outcome-defining question remains unresolved. Revise the proposal if any check fails.
 
 Then save the exact returned bytes to:
 
@@ -93,8 +102,8 @@ Important constraints:
 - Cross-cutting requirements such as host compatibility, exact identity,
   authorization, and final parent verification must remain visible.
 - Do not treat passing child proofs as proof of the parent contract.
-- Final parent proof must run against one integrated candidate containing the
-  complete v1 integration.
+- Final parent review and proof must run against the complete release subject
+  defined below.
 - Draft only. Do not create issues or modify trackers yet.
 ```
 
@@ -108,7 +117,15 @@ I would expect the result to look roughly like this, although `slice-contract` s
 | **C — Controlled corrections**                | Review correction, proof repair, amendment routing, verification epochs and budgets.                              |
 | **D — Recovery and operational release**      | Resume, effect reconciliation, interrupted mutation, cancellation, ownership, complete release conformance.       |
 
-A1 should live in the Atomic repository. The remaining integration children will probably live in the integration/P2P repository.
+A1 should live in the Atomic repository. The remaining integration children should live in this integration repository unless the draft identifies a concrete repository-owned prerequisite.
+
+Do not invent a synthetic candidate snapshot spanning both repositories. The final release subject has these separately recorded identities:
+
+- The **integration candidate** is one exact recoverable snapshot from this repository, with one fixed comparison base. This is the parent review/proof candidate.
+- The **Atomic host prerequisite** is the exact proven A1 candidate or build, identified by its full source identity and reproducible build digest. It is part of the tested environment, not part of the integration candidate snapshot.
+- The **skill bundle** is the exact retained Promise to Proof bundle from the source baseline in P2PA-001 section 2.
+
+After A1 is complete, every dependent child must use the same pinned Atomic host prerequisite. A change to that prerequisite makes dependent compatibility and end-to-end evidence stale.
 
 ## 3. Approve and publish the decomposition
 
@@ -423,22 +440,46 @@ This is especially important for A1/A2/B/C/D. A child being green simply establi
 
 # 12. Assemble the full integration candidate
 
-Once all children are proven and their prerequisites are satisfied, create one exact integrated candidate containing the complete v1 implementation.
+Once all children are proven and their prerequisites are satisfied, create one exact integration candidate containing the complete v1 implementation in this repository. Record the exact proven Atomic host prerequisite and skill bundle used with it.
 
 This should be a deliberate integration step, not “whatever happens to be on the branch.”
 
 If assembling the children requires actual code changes, that integration work itself needs an assigned child/contract. If assembly is purely combining already-defined contributions, capture the resulting exact candidate and its provenance.
 
-Then review the integrated candidate if it differs materially from the individually reviewed child candidates or includes integration code. Promise to Proof explicitly requires refreshing review in that situation.
+Seal the integration candidate even if its bytes happen to match the final integration child candidate. Child review and proof remain supporting evidence because they cover child contracts, not the complete parent contract.
 
-# 13. Run the decisive parent proof
+# 13. Run decisive parent review and proof
 
-This is the step that establishes whether **P2PA-001 itself** was delivered.
+These two fresh invocations establish whether **P2PA-001 itself** was delivered. They may run concurrently only if both receive isolated, immutable reconstructions of the same integration candidate and parent agreement.
+
+First run the complete parent review:
 
 ```text
-/prove docs/acceptance-contracts/p2pa-001.md; candidate <integrated candidate handoff>
+/review-implementation <integration candidate handoff> against <fixed integration comparison base>
 
-Perform final parent proof for P2PA-001 against this one exact integrated candidate.
+Review this exact integration candidate against the complete saved P2PA-001
+parent contract.
+
+Treat child reviews as historical supporting evidence only. Perform complete
+parent-contract coverage, including contract fidelity, scope, engineering
+quality, authorization and role boundaries, deterministic protocol enforcement,
+host compatibility, recovery behavior, and release conformance.
+
+Bind the report to the exact parent agreement, source snapshot, integration
+candidate, comparison base, verification epoch, Atomic host prerequisite, skill
+bundle, and declared review environment.
+
+Do not repair anything and do not perform acceptance proof.
+Return REVIEWED only if the complete parent review is clean for this exact
+candidate. Save and reread the report outside every candidate tree.
+```
+
+Run parent proof separately:
+
+```text
+/prove docs/acceptance-contracts/p2pa-001.md; candidate <integration candidate handoff>
+
+Perform final parent proof for P2PA-001 against this one exact integration candidate.
 
 Do not aggregate child PROVEN results into the parent verdict.
 Historical child proofs are supporting references only.
@@ -478,11 +519,14 @@ Use independently committed fixture expectations and actual observations.
 Do not repair during this proof.
 Do not treat child proof, CI, or workflow completion as parent acceptance.
 
-Return PROVEN only if every material parent obligation is established for the
-integrated candidate.
+Return PROVEN only if every parent requirement is established for the exact
+integration candidate under the recorded Atomic host prerequisite and proof
+environment.
 ```
 
-That is the decisive acceptance run.
+The result is acceptable only when the parent review is `REVIEWED` and the parent proof is `PROVEN` for the same exact parent agreement, source snapshot, integration candidate, comparison base, and verification epoch. Both must record the pinned Atomic host prerequisite and skill bundle. Before treating the work as complete, reread both reports and confirm that all R1-R25 evidence remains retrievable, no writer or verifier is active, and no authority, amendment, source, identity, or policy decision is pending.
+
+Record the final result as `VERIFIED` with `merge_readiness: NOT_ASSESSED`. CI, repository review, commit, push, merge, and deployment remain separate. If any completion condition fails, preserve the artifacts and follow the applicable correction, amendment, or blocker route instead of declaring success.
 
 ## The overall sequence
 
@@ -511,14 +555,13 @@ slice-contract
         └──── child D  ─ plan → implement → review + prove
                               │
                               ▼
-                    integrated candidate
+                          integration candidate
                               │
-                       integrated review
+                        parent review + parent proof
                               │
-                              ▼
-                  prove parent R1–R25
-                              │
-                           PROVEN
+                        completion gate
+                          │
+                            VERIFIED
 ```
 
 The critical idea is that **we use Promise to Proof to implement the Atomic integration before the Atomic integration exists**. Initially, a human/enclosing agent manually invokes and carries these skills between stages. Once the project is finished, the product we have built is precisely the Atomic runtime that can automate this same sequence for future software work.

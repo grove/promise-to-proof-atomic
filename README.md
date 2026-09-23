@@ -15,8 +15,8 @@ Version 1 does not cover slicing work into child items, CI repair, commits, push
 ## Project documents
 
 - [Atomic integration overview](docs/atomic-integration.md) explains how the two projects fit together and sketches possible extensions.
-- [P2PA-001 implementation specification](docs/spec/p2pa-001.md) defines proposed version 1 requirements, workflow behavior, and release gates.
-- [P2PA-001 contracts schema](docs/spec/p2pa-001.contracts.schema.json) defines the structural contracts for workflow inputs, phase results, and final handoffs. The specification also requires semantic validation beyond the schema.
+- [P2PA-001 implementation specification](docs/specs/p2pa-001.md) defines proposed version 1 requirements, workflow behavior, and release gates.
+- [P2PA-001 contracts schema](docs/specs/p2pa-001.contracts.schema.json) defines the structural contracts for workflow inputs, phase results, and final handoffs. The specification also requires semantic validation beyond the schema.
 
 ## License
 
