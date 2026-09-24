@@ -205,6 +205,10 @@ configuration, warnings, or database health.
 
 Add the smallest complete implementation and meaningful tests required by the
 contract. Cover all specified execution modes and resume behavior.
+For each selected executable requirement, add or confirm a direct acceptance
+test/check at the agreed seam and run it. Record the assertion and observed
+result by requirement ID; use a contract-approved static evidence path where
+a behavioral test is inapplicable. Do not return IMPLEMENTED for missing coverage.
 
 Do not implement the Promise-to-Proof integration itself in this child.
 Do not weaken the contract because an existing internal API is inconvenient.
@@ -235,6 +239,12 @@ Implement the smallest complete solution. Preserve:
 - artifact/report separation,
 - durable workflow behavior,
 - explicit failure rather than optimistic fallback.
+
+For every selected executable requirement, add or confirm a direct acceptance
+test/check at the agreed seam and run it before handoff. Map each requirement
+to its assertion and observed result, or to its contract-approved non-test
+evidence path. A green suite alone does not permit IMPLEMENTED, even when
+the behavior was already present.
 
 Do not implement later child outcomes unless they are strictly necessary for
 this child's promised behavior.
