@@ -438,6 +438,8 @@ It does **not** mean the parent P2PA-001 specification is proven.
 
 This is especially important for A1/A2/B/C/D. A child being green simply establishes that child outcome and its contribution.
 
+After the direct-path child B is working, and before implementing correction and recovery in C and D, consider a two-working-day TLA+ experiment. Model the decision reducer, parallel review/proof join, verification-epoch invalidation, and crash/restart effects. Turn any counterexample into a deterministic implementation test. If the experiment finds no protocol ambiguity or useful test case, continue without maintaining the model. This is not a release gate; R14-R23 and the host conformance tests remain required. Do not add Lean work to version 1.
+
 # 12. Assemble the full integration candidate
 
 Once all children are proven and their prerequisites are satisfied, create one exact integration candidate containing the complete v1 implementation in this repository. Record the exact proven Atomic host prerequisite and skill bundle used with it.
